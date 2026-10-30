@@ -122,7 +122,7 @@ int Distribuzione(vector<int>& A, int sx, int px, int dx) {
 }
 
 void QuickSortTroncato(vector<int>& A, int sx, int dx, const int L) { // metto const a L tanto non cambia mai 
-    if (dx - sx +1 > L) {
+    if (dx - sx +1 > L) { // man mano c'è un certo blocco da riordinare e non vogliamo che siano più di L
         int pivot = random(sx, dx); 
         // stampaArray(A, sx, dx);
         int rango = Distribuzione(A, sx, pivot, dx);
@@ -140,14 +140,18 @@ void QuickSortTroncato(vector<int>& A) { // giusto per dargli solo una variabile
 
 /* SORT IBRIDO */
 
-void SwagSort(vector<int>& A, int sx, int dx, int L){
-    int L=1;
-    if(dx - sx + 1 > L){ // man mano c'è un certo blocco da riordinare e non vogliamo che siano più di L
-    QuickSortTroncato(A); // costo medio O(nlogn)
-    insertionSort(A); // costo O(n L) al casoo pessimo
+void SwagSort(vector<int>& A) {
+    int L = log2(A.size());
 
-    }
-}
+    QuickSortTroncato(A, 0, A.size() - 1, L); 
+
+    insertionSort(A); 
+} /* La scelta di L=log n risponde alla domanda "qual è il pezzo più grande che posso far fare all'Insertion
+Sort prima che questo diventi matematicamente più ingombrante del Quicksort? 
+Negli algoritmi fatti bene di solito si usa tipo L=16, che è un giusto bilanciamento tra alleggere il lavoro dell'
+Insertion Sort, ma senza aumentare esponenzialmente il lavoro del Quicksort, come farebbe ad esempio L=1. */
+
+
 
 /* MAIN */
 
@@ -172,8 +176,8 @@ int main()
     };
     const vector<string> complessita = {
         "insertion sort quadratico al caso pessimo",
-        "quicksort randomizzato",
-        "è sempre ordine nlogn"
+        "quicksort randomizzato è asintoticamente nlogn",
+        "il sort ibrido è sempre ordine nlogn"
     };
 
     auto ordinato = A;
@@ -209,3 +213,5 @@ int main()
     }
     return 0;
 }
+
+// git commit -m "fix: aggiustata definizione di SwagSort per rispettare FuncPtr e cambiato valore di L"
